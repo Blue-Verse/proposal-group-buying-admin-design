@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="공동구매 플랫폼 판매자/관리자 페이지 기획 및 UI/UX 디자인 — 프로젝트 제안서" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['SUIT Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px -18px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; font-size: 16px; }
+    body {
+      font-family: 'SUIT Variable', sans-serif;
+      font-size: 1rem;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.06), transparent 48%);
+    }
+    .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4 {
+      color: rgb(15 23 42); font-weight: 700; letter-spacing: -0.01em;
+      line-height: 1.3; margin-top: 1.6em; margin-bottom: 0.7em;
+    }
+    .doc-content h1 { font-size: 2rem; margin-top: 0.2em; }
+    .doc-content h2 { font-size: 1.4rem; }
+    .doc-content h3 { font-size: 1.15rem; }
+    .doc-content p, .doc-content li {
+      color: rgb(51 65 85); line-height: 1.8; font-size: 1rem;
+    }
+    .doc-content p, .doc-content ul, .doc-content ol,
+    .doc-content table, .doc-content pre, .doc-content blockquote {
+      margin-bottom: 1rem;
+    }
+    .doc-content ul, .doc-content ol { padding-left: 1.2rem; }
+    .doc-content ul { list-style: disc; }
+    .doc-content ol { list-style: decimal; }
+    .doc-content table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid rgb(226 232 240); border-radius: 0.75rem;
+      overflow: hidden; font-size: 1rem;
+    }
+    .doc-content th, .doc-content td {
+      border: 1px solid rgb(226 232 240); padding: 0.7rem 0.8rem;
+      text-align: left; vertical-align: top;
+    }
+    .doc-content th {
+      background: rgb(248 250 252); color: rgb(30 41 59); font-weight: 600;
+    }
+    .doc-content pre, .doc-content code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    .doc-content pre {
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem; border-radius: 0.75rem; overflow-x: auto;
+      font-size: 1rem; line-height: 1.65;
+    }
+    .doc-content p code, .doc-content li code,
+    .doc-content td code, .doc-content th code {
+      background: rgb(241 245 249); color: rgb(15 23 42);
+      border: 1px solid rgb(226 232 240); border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; font-size: 1em;
+    }
+    .doc-content blockquote {
+      border-left: 3px solid rgb(14 165 233); padding-left: 0.85rem;
+      color: rgb(71 85 105); background: rgb(240 249 255);
+      border-radius: 0.5rem; padding-top: 0.55rem; padding-bottom: 0.55rem;
+    }
+    .text-xs { font-size: 1rem !important; }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0.25rem; bottom: 0.25rem;
+      width: 2px; background: rgb(186 230 253);
+    }
+    .timeline-item { position: relative; margin-bottom: 1.75rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -1.65rem; top: 0.35rem;
+      width: 0.75rem; height: 0.75rem; border-radius: 50%;
+      background: rgb(2 132 199); border: 3px solid rgb(224 242 254);
+    }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    #sidebar-backdrop { display: none; }
+    #sidebar-backdrop.open { display: block; }
+    @media (max-width: 1023px) {
+      #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; position: fixed; top: 0; left: 0; z-index: 40; height: 100vh; width: 80vw; max-width: 320px; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
+  <title>공동구매 플랫폼 판매자/관리자 페이지 기획 및 UI/UX 디자인 — 프로젝트 제안서</title>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+  <div class="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+
+    <!-- Header -->
+    <header class="mb-6 rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-3 shadow-soft backdrop-blur">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="sidebar-toggle" class="lg:hidden inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          메뉴
+        </button>
+        <a href="#home" class="inline-flex items-center shrink-0 text-sm font-bold tracking-tight text-slate-800">
+          프로젝트 제안서
+        </a>
+        <div class="hidden sm:block ml-auto text-right">
+          <p class="text-sm font-semibold tracking-[0.04em] text-sky-700/90">공동구매 플랫폼 판매자/관리자 페이지 기획 및 UI/UX 디자인</p>
+          <p class="text-xs text-slate-400">프로젝트 제안서</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+
+      <!-- Sidebar -->
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 lg:hidden" onclick="closeSidebar()"></div>
+      <aside id="sidebar" class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-soft backdrop-blur lg:sticky lg:top-6 lg:h-[calc(100vh-4rem)] lg:overflow-auto">
+        <nav id="nav" class="space-y-1">
+          <a href="#home" data-page="home" class="nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700">홈</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">제안서</p>
+          <a href="#overview" data-page="overview" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">프로젝트 소개</a>
+          <a href="#estimate" data-page="estimate" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">견적서</a>
+          <a href="#manday" data-page="manday" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">공수계산서</a>
+          <a href="#prd" data-page="prd" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">PRD</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">일정 & 경험</p>
+          <a href="#timeline" data-page="timeline" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">일정 제안</a>
+          <a href="#portfolio" data-page="portfolio" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">유사 프로젝트 경험</a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="min-w-0">
+
+        <!-- PAGE: Home -->
+        <div id="page-home" class="page-section active space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur md:p-8">
+            <p class="mb-2 text-xs font-semibold tracking-[0.2em] text-sky-700/80">프로젝트 제안서</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">공동구매 플랫폼 판매자/관리자 페이지 기획 및 UI/UX 디자인</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">기존 DB/API 구조를 완벽히 반영하여, 판매자·관리자 페이지의 전체 기능 정의부터 운영 흐름 설계, Figma UI/UX 디자인까지 — 개발자가 바로 구현할 수 있는 수준의 산출물을 제공합니다. 참여자 수 기반 실시간 할인 구조 및 공동구매 로직을 포함한 커머스 특화 설계를 수행합니다.</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">6,300,000원</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">30일</span>
+              <span class="inline-flex rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-amber-700">디자인기획 / 커머스</span>
+              <a href="https://www.wishket.com/project/154059/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-500 transition hover:border-sky-300 hover:text-sky-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                원본 공고
+              </a>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="#overview" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소개</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">프로젝트 소개</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">공고 분석, 핵심 요구사항, 제안 포인트</p>
+            </a>
+            <a href="#estimate" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">비용</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">견적서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">항목별 비용 산출 근거 및 상세 견적</p>
+            </a>
+            <a href="#manday" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">공수</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">공수계산서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능별 기획/디자인 공수(man-day) 산출 내역</p>
+            </a>
+            <a href="#prd" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">기획</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">PRD</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">판매자/관리자 기능 요구사항 정의서</p>
+            </a>
+            <a href="#timeline" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">일정</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">일정 제안</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">4단계 마일스톤 및 산출물 일정표</p>
+            </a>
+            <a href="#portfolio" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">경험</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">유사 프로젝트 경험</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">커머스/관리자 대시보드 수행 경험</p>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">13+</p>
+              <p class="text-xs text-slate-500">완료 프로젝트</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">~60P</p>
+              <p class="text-xs text-slate-500">기획/디자인 페이지</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">4종</p>
+              <p class="text-xs text-slate-500">산출물 (IA/PRD/WF/UI)</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100%</p>
+              <p class="text-xs text-slate-500">참여율</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">각 메뉴를 클릭하시면 상세 내용을 확인하실 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- PAGE: 프로젝트 소개 -->
+        <div id="page-overview" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>프로젝트 소개</h1>
+              <blockquote>기존 DB/API 구조를 완벽히 반영하여, 판매자·관리자 페이지의 전체 기능 정의부터 운영 흐름 설계, Figma UI/UX 디자인까지 — 개발자가 바로 구현할 수 있는 수준의 산출물을 제공합니다.</blockquote>
+
+              <h2>프로젝트 개요</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td><a href="https://www.wishket.com/project/154059/" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline decoration-sky-300 hover:decoration-sky-500">공동구매 플랫폼 판매자/관리자 페이지 기획 및 UI/UX 디자인</a></td></tr>
+                <tr><td>카테고리</td><td>디자인기획 / 커머스·쇼핑몰</td></tr>
+                <tr><td>제안 금액</td><td>6,300,000원 (VAT 별도)</td></tr>
+                <tr><td>제안 기간</td><td>30일</td></tr>
+                <tr><td>핵심 도구</td><td>Figma (기존 디자인 시스템 기반)</td></tr>
+              </table>
+
+              <h2>핵심 요구사항 분석</h2>
+              <ul>
+                <li><strong>판매자 페이지</strong> — 상품 등록/관리, 공동구매 딜 생성(참여자 수 기반 할인 조건), 주문·배송·취소·환불 관리, 정산·수익 관리, 고객 문의·리뷰 관리</li>
+                <li><strong>관리자 페이지</strong> — 판매자/사용자 관리, 상품·딜 승인/관리, 주문·결제·환불·정산 관리, 커뮤니티 관리, 통계·운영 대시보드</li>
+                <li><strong>공통</strong> — 기존 DB/API 구조 반영, 결제·정산·환불 커머스 핵심 로직 설계, 예외 케이스(부분 취소, 정산 오류, 결제 실패 등) 포함</li>
+                <li><strong>산출물</strong> — IA(메뉴 구조도), PRD(기능 명세서), 와이어프레임(Lo-fi 기획서), Figma UI/UX 디자인 원본 파일</li>
+                <li><strong>PC Web 전용</strong> — 관리자 및 판매자용 데스크탑 웹 기준</li>
+              </ul>
+
+              <h2>제안 포인트</h2>
+              <p>본 프로젝트는 단순 디자인이 아닌, <strong>운영 로직 및 기능 구조 중심의 서비스 설계</strong>가 핵심입니다. 다음과 같은 접근으로 개발팀이 바로 구현할 수 있는 산출물을 제공합니다:</p>
+              <ul>
+                <li><strong>ERD/API 기반 역설계</strong> — 기존 DB 구조와 API 명세서를 분석하여 데이터 흐름에 맞는 화면 설계. 개발 단계에서 구조 변경 최소화</li>
+                <li><strong>커머스 운영 로직 내재화</strong> — 쿠팡/스마트스토어 판매자센터, 오늘의집/마켓컬리 운영 흐름을 참고하되, 공동구매 특화 로직(참여자 수 기반 할인, 딜 상태 관리) 반영</li>
+                <li><strong>예외 케이스 선제 설계</strong> — 부분 취소, 정산 오류, 결제 실패, 딜 무산 등 실서비스 운영 시 발생하는 예외 시나리오를 기획 단계에서 정의</li>
+                <li><strong>TOSS 스타일 UX</strong> — 복잡한 커머스 관리 기능을 사용자 친화적인 UI/UX로 풀어내어, 판매자/관리자의 학습 비용 최소화</li>
+              </ul>
+
+              <h2>사용 기술 및 툴</h2>
+              <h3>기획/디자인 도구</h3>
+              <div class="flex flex-wrap gap-2 not-prose mb-4">
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Figma</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">FigJam</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Notion</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Google Sheets</span>
+              </div>
+              <h3>협업 및 커뮤니케이션</h3>
+              <div class="flex flex-wrap gap-2 not-prose">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Slack / 카카오톡</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Zoom / Google Meet</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Notion</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 견적서 -->
+        <div id="page-estimate" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>견적서</h1>
+              <blockquote>본 견적서는 프로젝트 요구사항 분석을 기반으로 산출되었습니다.</blockquote>
+
+              <h2>견적 요약</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td>공동구매 플랫폼 판매자/관리자 페이지 기획 및 UI/UX 디자인</td></tr>
+                <tr><td>제안 금액</td><td><strong>6,300,000원 (VAT 별도)</strong></td></tr>
+                <tr><td>제안 기간</td><td>30일</td></tr>
+                <tr><td>견적 유효기간</td><td>제안일로부터 30일</td></tr>
+              </table>
+
+              <h2>상세 견적 내역</h2>
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th>수량</th><th>단가</th><th>금액</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>기획</td><td>IA(메뉴 구조도) + PRD(기능 명세서) 작성</td><td>1식</td><td>-</td><td>1,575,000원</td></tr>
+                  <tr><td>화면설계</td><td>와이어프레임(Lo-fi 기획서) 작성</td><td>1식</td><td>-</td><td>945,000원</td></tr>
+                  <tr><td>디자인</td><td>UI/UX 디자인 (기존 디자인 시스템 기반)</td><td>약 60P</td><td>-</td><td>3,150,000원</td></tr>
+                  <tr><td>검수</td><td>피드백 반영 및 최종 산출물 정리</td><td>1식</td><td>-</td><td>630,000원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="4">합계 (VAT 별도)</th><th>6,300,000원</th></tr>
+                </tfoot>
+              </table>
+
+              <h2>산정 근거</h2>
+              <ul>
+                <li>판매자 페이지(약 30P) + 관리자 페이지(약 30P) = 총 약 60P 기준</li>
+                <li>기존 디자인 시스템 활용으로 컴포넌트 재사용 극대화</li>
+                <li>기획/설계와 디자인을 단계별 순차 진행하여 품질 확보</li>
+                <li>ERD/API 명세서 분석 기반 데이터 흐름 반영 설계</li>
+              </ul>
+
+              <h2>포함 사항</h2>
+              <ul>
+                <li>메뉴 구조도(IA) — 판매자/관리자 전체</li>
+                <li>기능 명세서(PRD) — 기능별 상세 정의</li>
+                <li>화면 설계서(와이어프레임) — Lo-fi 기획서</li>
+                <li>UI/UX 디자인 원본 파일(Figma) — Hi-fi 디자인</li>
+                <li>1회 피드백 반영 수정</li>
+              </ul>
+
+              <h2>불포함 사항</h2>
+              <ul>
+                <li>프론트엔드/백엔드 개발</li>
+                <li>소비자 앱 기획/디자인 (기존 완료 부분)</li>
+                <li>2회 이상 대규모 수정 (별도 협의)</li>
+                <li>인쇄물, 영상, 3D 등 비 UI 디자인</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 공수계산서 -->
+        <div id="page-manday" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>공수계산서</h1>
+              <blockquote>기능별 기획/디자인 공수(Man-Day)를 산출하여 일정과 비용의 근거를 제시합니다.</blockquote>
+
+              <h2>공수 요약</h2>
+              <table>
+                <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
+                <tr><td>기획/설계 (IA, PRD)</td><td>5 M/D</td><td>22%</td></tr>
+                <tr><td>화면 설계 (와이어프레임)</td><td>4 M/D</td><td>17%</td></tr>
+                <tr><td>UI/UX 디자인 (Figma)</td><td>12 M/D</td><td>52%</td></tr>
+                <tr><td>검수/피드백 반영</td><td>2 M/D</td><td>9%</td></tr>
+                <tr><th>합계</th><th>23 M/D</th><th>100%</th></tr>
+              </table>
+
+              <h2>기능별 상세 공수</h2>
+              <table>
+                <thead>
+                  <tr><th>기능</th><th>세부 작업</th><th>담당</th><th>공수 (M/D)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td rowspan="4">기획/설계</td><td>DB/API 구조 분석 및 데이터 흐름 파악</td><td>기획</td><td>1</td></tr>
+                  <tr><td>IA(메뉴 구조도) 작성 — 판매자/관리자</td><td>기획</td><td>1.5</td></tr>
+                  <tr><td>PRD(기능 명세서) — 판매자 페이지</td><td>기획</td><td>1</td></tr>
+                  <tr><td>PRD(기능 명세서) — 관리자 페이지</td><td>기획</td><td>1.5</td></tr>
+                  <tr><td rowspan="2">화면 설계</td><td>판매자 페이지 와이어프레임 (~30P)</td><td>설계</td><td>2</td></tr>
+                  <tr><td>관리자 페이지 와이어프레임 (~30P)</td><td>설계</td><td>2</td></tr>
+                  <tr><td rowspan="4">UI/UX 디자인</td><td>디자인 시스템 분석 및 컴포넌트 확장</td><td>디자인</td><td>1</td></tr>
+                  <tr><td>판매자 페이지 UI/UX 디자인 (~30P)</td><td>디자인</td><td>5</td></tr>
+                  <tr><td>관리자 페이지 UI/UX 디자인 (~30P)</td><td>디자인</td><td>5</td></tr>
+                  <tr><td>공통 모달/팝업/상태 화면</td><td>디자인</td><td>1</td></tr>
+                  <tr><td rowspan="2">검수</td><td>클라이언트 피드백 반영 수정</td><td>검수</td><td>1.5</td></tr>
+                  <tr><td>최종 산출물 정리 및 인수인계</td><td>검수</td><td>0.5</td></tr>
+                </tbody>
+              </table>
+
+              <h2>산정 기준</h2>
+              <ul>
+                <li>1 M/D = 8시간 기준 (1인 1일 작업량)</li>
+                <li>주 5일 근무 기준</li>
+                <li>버퍼 10~15% 포함</li>
+                <li>유사 프로젝트 수행 경험 기반 효율적 진행</li>
+                <li>기존 디자인 시스템 활용으로 컴포넌트 생산성 향상 반영</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: PRD -->
+        <div id="page-prd" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>PRD (Product Requirements Document)</h1>
+              <blockquote>판매자/관리자 페이지의 기능 요구사항을 정의하고 범위를 명확히 합니다.</blockquote>
+
+              <h2>1. 프로젝트 배경 및 목적</h2>
+              <p>공동구매 플랫폼 서비스를 개발 중이며, 소비자 앱은 결제/배송 일부를 제외하고 주요 기능이 구현된 상태입니다. 본 프로젝트는 실서비스 운영이 가능한 수준의 <strong>판매자 페이지</strong>와 <strong>관리자 페이지</strong>를 기획·설계하여, 개발 단계로 바로 이어질 수 있는 산출물을 확보하는 것이 목적입니다.</p>
+              <p>특히 단순 쇼핑몰이 아닌 <strong>참여자 수 기반 실시간 할인 구조</strong> 및 공동구매 로직을 포함한 플랫폼이므로, 이에 맞는 특화 설계가 필요합니다.</p>
+
+              <h2>2. 사용자 정의</h2>
+              <table>
+                <thead>
+                  <tr><th>사용자 유형</th><th>설명</th><th>주요 기능</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>판매자</td><td>상품을 등록하고 공동구매 딜을 운영하는 사업자</td><td>상품 관리, 딜 생성, 주문/배송/환불 관리, 정산 확인, 고객 응대</td></tr>
+                  <tr><td>관리자</td><td>플랫폼 전체를 운영·관리하는 내부 담당자</td><td>판매자/사용자 관리, 상품/딜 승인, 주문/결제/정산 관리, 통계, 커뮤니티 관리</td></tr>
+                  <tr><td>소비자</td><td>공동구매에 참여하는 일반 사용자 (기존 앱 — 범위 외)</td><td>상품 탐색, 공동구매 참여, 결제, 배송 조회</td></tr>
+                </tbody>
+              </table>
+
+              <h2>3. 기능 요구사항</h2>
+
+              <h3>3.1 판매자 페이지</h3>
+              <ul>
+                <li><strong>[필수]</strong> 대시보드 — 매출 현황, 주문 현황, 공동구매 진행 현황 요약</li>
+                <li><strong>[필수]</strong> 상품 등록/수정/삭제 — 카테고리, 이미지, 가격, 재고, 옵션 관리</li>
+                <li><strong>[필수]</strong> 공동구매 딜 생성 — 참여자 수 기반 할인율 설정, 딜 기간, 최소/최대 참여자 수, 딜 상태 관리</li>
+                <li><strong>[필수]</strong> 주문 관리 — 주문 목록, 상태 변경(확인→배송준비→배송중→배송완료), 송장 번호 등록</li>
+                <li><strong>[필수]</strong> 배송 관리 — 배송 추적, 일괄 송장 등록</li>
+                <li><strong>[필수]</strong> 취소/환불 처리 — 전체 취소, 부분 취소, 환불 사유 입력, 환불 상태 관리</li>
+                <li><strong>[필수]</strong> 정산 관리 — 정산 내역 조회, 정산 주기 확인, 수익 통계</li>
+                <li><strong>[필수]</strong> 고객 문의 — 문의 목록, 답변 작성, 상태 관리(대기/답변완료)</li>
+                <li><strong>[선택]</strong> 리뷰 관리 — 리뷰 목록, 답글 작성</li>
+                <li><strong>[선택]</strong> 판매자 프로필/설정 — 사업자 정보, 배송 정책, 알림 설정</li>
+              </ul>
+
+              <h3>3.2 관리자 페이지</h3>
+              <ul>
+                <li><strong>[필수]</strong> 대시보드 — 전체 매출, 가입자 수, 활성 딜 수, 주요 KPI 차트</li>
+                <li><strong>[필수]</strong> 판매자 관리 — 판매자 목록, 상세 조회, 승인/거절, 상태 변경</li>
+                <li><strong>[필수]</strong> 사용자(소비자) 관리 — 회원 목록, 상세 조회, 상태 변경</li>
+                <li><strong>[필수]</strong> 상품 관리 — 상품 승인/반려, 카테고리 관리</li>
+                <li><strong>[필수]</strong> 딜(공동구매) 관리 — 딜 승인/반려, 딜 현황 모니터링, 강제 종료</li>
+                <li><strong>[필수]</strong> 주문 관리 — 전체 주문 조회, 이슈 건 처리</li>
+                <li><strong>[필수]</strong> 결제 관리 — 결제 내역, 결제 실패 처리</li>
+                <li><strong>[필수]</strong> 환불 관리 — 환불 요청 처리, 부분 환불 승인</li>
+                <li><strong>[필수]</strong> 정산 관리 — 정산 내역, 정산 승인, 정산 오류 처리</li>
+                <li><strong>[필수]</strong> 통계 — 매출, 사용자, 상품, 공동구매 참여율 통계</li>
+                <li><strong>[선택]</strong> 커뮤니티 관리 — 제안/댓글 관리, 신고 처리</li>
+                <li><strong>[선택]</strong> 운영 설정 — 공지사항, 배너, 약관 관리</li>
+              </ul>
+
+              <h3>3.3 공통 로직 설계</h3>
+              <ul>
+                <li><strong>[필수]</strong> 공동구매 딜 상태 흐름 — 생성→모집중→목표달성→종료→정산 상태 전이</li>
+                <li><strong>[필수]</strong> 결제 흐름 — 결제 요청→결제 완료→부분취소→전체취소 흐름</li>
+                <li><strong>[필수]</strong> 정산 흐름 — 주문완료→정산대기→정산승인→정산완료 흐름</li>
+                <li><strong>[필수]</strong> 예외 처리 — 딜 무산 시 전체 환불, 부분 취소 시 할인율 재계산, 정산 오류 수동 처리</li>
+              </ul>
+
+              <h2>4. 비기능 요구사항</h2>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>요구사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>디바이스</td><td>PC Web (1280px 이상 기준, 반응형 고려)</td></tr>
+                  <tr><td>디자인 일관성</td><td>기존 디자인 시스템 준수, 컴포넌트 재사용</td></tr>
+                  <tr><td>접근성</td><td>명확한 레이블, 충분한 색상 대비, 키보드 내비게이션 고려</td></tr>
+                  <tr><td>데이터 정합성</td><td>기존 ERD/API 구조와 1:1 매핑 가능한 화면 설계</td></tr>
+                </tbody>
+              </table>
+
+              <h2>5. 기술 제약사항</h2>
+              <ul>
+                <li>기존에 구축된 DB 구조(ERD) 및 API 명세서를 반드시 반영</li>
+                <li>기존 디자인 시스템(Figma)을 기반으로 확장 설계</li>
+                <li>소비자 앱의 기존 기능과 데이터 흐름 일관성 유지</li>
+                <li>참여자 수 기반 실시간 할인 구조를 화면에 명확히 반영</li>
+              </ul>
+
+              <h2>6. 범위 외 사항 (Out of Scope)</h2>
+              <ul>
+                <li>프론트엔드/백엔드 개발 (기획·디자인까지만 수행)</li>
+                <li>소비자 앱 기획/디자인 (기존 완료 영역)</li>
+                <li>결제 PG 연동 기술 설계 (기능 흐름 설계까지만)</li>
+                <li>서버 인프라 설계</li>
+                <li>모바일 반응형 디자인 (PC Web 기준)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 일정 제안 -->
+        <div id="page-timeline" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>일정 제안</h1>
+              <blockquote>총 30일 기준 단계별 마일스톤 및 산출물을 제안합니다.</blockquote>
+
+              <h2>전체 일정 요약</h2>
+              <table>
+                <thead>
+                  <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Phase 1: 기획/설계</td><td>Day 1–8 (8일)</td><td>IA(메뉴 구조도), PRD(기능 명세서) 초안</td></tr>
+                  <tr><td>Phase 2: 화면 설계</td><td>Day 9–14 (6일)</td><td>와이어프레임(Lo-fi 기획서)</td></tr>
+                  <tr><td>Phase 3: UI/UX 디자인</td><td>Day 15–26 (12일)</td><td>Figma UI/UX 디자인 파일</td></tr>
+                  <tr><td>Phase 4: 검수/납품</td><td>Day 27–30 (4일)</td><td>최종 산출물 정리, 피드백 반영</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <h2 class="mb-4 text-sm font-semibold tracking-[0.14em] text-slate-500">상세 타임라인</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
+                <h4 class="text-base font-semibold text-slate-900">기획 및 설계</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 1–8</p>
+                <p class="text-sm leading-7 text-slate-600">기존 DB/API 구조 분석, 데이터 흐름 파악, 메뉴 구조도(IA) 작성, 기능 명세서(PRD) 작성</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: IA(메뉴 구조도), PRD(기능 명세서) 초안</li>
+                  <li>중간 리뷰: Day 5 — IA 구조 확인 및 방향 합의</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
+                <h4 class="text-base font-semibold text-slate-900">화면 설계 (와이어프레임)</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 9–14</p>
+                <p class="text-sm leading-7 text-slate-600">판매자/관리자 페이지 와이어프레임(Lo-fi 기획서) 작성, 화면 흐름 및 인터랙션 정의</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 화면 설계서(와이어프레임) — 약 60P</li>
+                  <li>중간 리뷰: Day 12 — 핵심 화면 리뷰 및 피드백 반영</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
+                <h4 class="text-base font-semibold text-slate-900">UI/UX 디자인</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 15–26</p>
+                <p class="text-sm leading-7 text-slate-600">기존 디자인 시스템 분석 및 컴포넌트 확장, 판매자/관리자 페이지 Hi-fi UI/UX 디자인</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: Figma UI/UX 디자인 원본 파일</li>
+                  <li>중간 리뷰: Day 20 — 판매자 페이지 디자인 리뷰</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
+                <h4 class="text-base font-semibold text-slate-900">검수 및 납품</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 27–30</p>
+                <p class="text-sm leading-7 text-slate-600">클라이언트 피드백 반영, 최종 산출물 정리 및 인수인계</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 최종 IA, PRD, 와이어프레임, Figma 파일</li>
+                  <li>최종 리뷰: Day 30 — 전체 산출물 최종 확인</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h2>마일스톤 체크포인트</h2>
+              <table>
+                <thead>
+                  <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>M1: IA + PRD 초안</td><td>Day 8</td><td>메뉴 구조 및 기능 정의 승인</td></tr>
+                  <tr><td>M2: 와이어프레임 완료</td><td>Day 14</td><td>전체 화면 흐름 승인</td></tr>
+                  <tr><td>M3: UI/UX 디자인 완료</td><td>Day 26</td><td>Hi-fi 디자인 검수</td></tr>
+                  <tr><td>M4: 최종 납품</td><td>Day 30</td><td>피드백 반영 완료, 전체 산출물 인수인계</td></tr>
+                </tbody>
+              </table>
+
+              <h2>커뮤니케이션 계획</h2>
+              <table>
+                <tr><th>항목</th><th>방식</th><th>주기</th></tr>
+                <tr><td>일일 진행 공유</td><td>Slack / 카카오톡</td><td>매일</td></tr>
+                <tr><td>주간 미팅</td><td>Zoom / Google Meet</td><td>주 1회</td></tr>
+                <tr><td>마일스톤 리뷰</td><td>화면 공유 + Figma 코멘트</td><td>단계 완료 시</td></tr>
+                <tr><td>이슈 트래킹</td><td>Notion / Figma 코멘트</td><td>상시</td></tr>
+              </table>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 포트폴리오 -->
+        <div id="page-portfolio" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>유사 프로젝트 경험</h1>
+              <blockquote>본 프로젝트와 유사한 관리자 대시보드, 커머스 관리 시스템 수행 경험을 소개합니다.</blockquote>
+            </article>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">13+</p>
+              <p class="text-xs text-slate-500">완료 프로젝트</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100+</p>
+              <p class="text-xs text-slate-500">관리자 페이지 수</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">7년+</p>
+              <p class="text-xs text-slate-500">서비스 기획/개발 경험</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100%</p>
+              <p class="text-xs text-slate-500">참여율</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- EZ-Approve -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2B SaaS</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">EZ-Approve (전자결재 SaaS)</h3>
+              <p class="mt-1 text-xs text-slate-400">B2B SaaS · 2026.01~2026.03 (9주) · 참여율 100%</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>기업용 전자결재 SaaS 플랫폼. 50+ 페이지 관리자 대시보드, 7종 사용자 역할 기반 어드민 시스템, 다단계 승인 워크플로우를 기획부터 개발까지 전 과정 수행.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>다단계 전자결재 엔진 (8종 결재 액션: 상신·합의·전결·선결·후결·대결)</li>
+                  <li>50+ 페이지 관리자 대시보드 — 사용자 관리, 권한 설정, 문서 관리</li>
+                  <li>7 사용자 역할 기반 RBAC 권한 체계 — 역할별 메뉴/기능 제어</li>
+                  <li>120-150 API 엔드포인트 매핑 화면 설계</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>관리자 대시보드 50+ 페이지 설계 경험</strong>이 본 프로젝트의 판매자/관리자 페이지 약 60P 설계와 직접적으로 유사합니다. 특히 <strong>다단계 승인 워크플로우</strong>는 공동구매 딜 승인, 상품 승인, 정산 승인 흐름 설계에 바로 적용 가능합니다. 또한 <strong>7 사용자 역할 기반 권한 체계</strong>는 판매자/관리자 역할 분리 설계에 직접 활용됩니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MUI v5</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Figma</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">TypeScript</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Series-B -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">핀테크 / VC</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Series-B (VC 펀드 관리 플랫폼)</h3>
+              <p class="mt-1 text-xs text-slate-400">핀테크 · 2023.11~2024.12 (14개월) · 참여율 100%</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>VC 펀드 라이프사이클 관리 플랫폼. 50+ 페이지 관리 포탈, 복잡한 정산/수익 관리 시스템, 대시보드 및 통계 화면을 기획·설계·개발.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>50+ 페이지 관리 포탈 — 펀드, 투자, 포트폴리오, 보고서 관리</li>
+                  <li>정산/수익 관리 — 펀드별 투자 수익, 배분, 정산 내역 관리</li>
+                  <li>대시보드 및 통계 — KPI 차트, 실시간 현황 모니터링</li>
+                  <li>다단계 승인 워크플로우 — 투자 결정, 정산 승인 프로세스</li>
+                  <li>1,652 PR, 80+ 데이터 엔티티, 200-300+ API 엔드포인트</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>정산/수익 관리 시스템</strong>이 공동구매 플랫폼의 판매자 정산, 관리자 정산 승인 흐름과 구조적으로 유사합니다. <strong>대시보드 및 통계 화면</strong> 설계 경험은 운영 대시보드 설계에 직접 적용 가능합니다. 또한 <strong>80+ 데이터 엔티티 기반 화면 설계</strong> 경험은 기존 DB 구조를 반영한 화면 설계에 강점입니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MUI v5</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Figma</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AWS</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pilates App -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">B2B2C / 커머스</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Pilates App (필라테스 프랜차이즈 관리)</h3>
+              <p class="mt-1 text-xs text-slate-400">B2B2C · 2019.09~2019.12 (4개월) · 참여율 100%</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>필라테스 프랜차이즈 관리 플랫폼. 예약/결제/CRM 통합 관리 시스템으로, 판매자(강사/센터)와 소비자(회원) 양면을 모두 설계.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>멀티 지점 관리 — 본사에서 전체 지점 강사·회원·매출 통합 조회</li>
+                  <li>예약 시스템 — 개인/그룹 수업 예약, 자동 확인, 노쇼 감소</li>
+                  <li>결제 및 멤버십 관리 — 온라인 결제, 잔여 횟수/만료일 자동 추적</li>
+                  <li>매출 대시보드 — 일별/월별 지점별 매출 자동 집계</li>
+                  <li>3 플랫폼 동시 출시 (Android, iOS, Web)</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>판매자(센터)-소비자(회원) 양면 플랫폼</strong> 구조가 공동구매 플랫폼의 판매자-소비자 구조와 동일합니다. <strong>결제/멤버십 관리</strong>는 커머스 결제/환불 흐름 설계에, <strong>매출 대시보드</strong>는 판매자 정산/수익 관리 화면에 직접 적용 가능합니다. 또한 <strong>멀티 지점 관리</strong> 경험은 관리자 페이지의 판매자 관리 기능 설계에 활용됩니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">React Native</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">React</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Node.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Figma</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">프로젝트에 대해 더 자세한 논의를 원하시면 미팅을 신청해 주세요.</p>
+          </div>
+        </div>
+
+        <!-- Bottom Page Navigation -->
+        <div id="page-nav" class="mt-6 flex items-center justify-between gap-4" style="display:none;">
+          <a id="nav-prev" href="#home"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>
+              <span class="block text-xs text-slate-400">이전</span>
+              <span id="nav-prev-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">홈</span>
+            </span>
+          </a>
+          <a id="nav-next" href="#overview"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white text-right ml-auto">
+            <span>
+              <span class="block text-xs text-slate-400">다음</span>
+              <span id="nav-next-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">프로젝트 소개</span>
+            </span>
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      &copy; 2026 &middot; 본 제안서는 공동구매 플랫폼 판매자/관리자 페이지 기획 및 UI/UX 디자인 프로젝트를 위해 작성되었습니다.
+    </footer>
+  </div>
+
+  <!-- SPA Router -->
+  <script>
+    const pages = ['home', 'overview', 'estimate', 'manday', 'prd', 'timeline', 'portfolio'];
+    const pageLabels = {
+      home: '홈', overview: '프로젝트 소개', estimate: '견적서',
+      manday: '공수계산서', prd: 'PRD', timeline: '일정 제안', portfolio: '유사 프로젝트 경험'
+    };
+
+    function navigate(pageId) {
+      if (!pages.includes(pageId)) pageId = 'home';
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.dataset.page === pageId) {
+          link.className = 'nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700';
+        } else {
+          link.className = 'nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900';
+        }
+      });
+      updatePageNav(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeSidebar();
+    }
+
+    function updatePageNav(pageId) {
+      const nav = document.getElementById('page-nav');
+      const idx = pages.indexOf(pageId);
+      const prevBtn = document.getElementById('nav-prev');
+      const nextBtn = document.getElementById('nav-next');
+      const prevLabel = document.getElementById('nav-prev-label');
+      const nextLabel = document.getElementById('nav-next-label');
+      nav.style.display = (pageId === 'home') ? 'none' : 'flex';
+      if (idx > 0) {
+        prevBtn.href = '#' + pages[idx - 1];
+        prevLabel.textContent = pageLabels[pages[idx - 1]];
+        prevBtn.style.visibility = 'visible';
+      } else {
+        prevBtn.style.visibility = 'hidden';
+      }
+      if (idx < pages.length - 1) {
+        nextBtn.href = '#' + pages[idx + 1];
+        nextLabel.textContent = pageLabels[pages[idx + 1]];
+        nextBtn.style.visibility = 'visible';
+      } else {
+        nextBtn.style.visibility = 'hidden';
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    function handleHash() {
+      const hash = (location.hash || '#home').replace('#', '');
+      navigate(hash);
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('DOMContentLoaded', handleHash);
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-backdrop').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
